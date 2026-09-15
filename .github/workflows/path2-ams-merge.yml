@@ -27,7 +27,8 @@ jobs:
 
     permissions:
       contents: write   # needed to push merged changes
-      issues: write     # needed to create/close ams-sync-conflict issues (other notify checks are Slack-only, no issues)
+      # No issues:write -- Issues are disabled on this repo; all notify checks
+      # (including conflicts) are Slack-only, same as the other notify checks.
 
     steps:
       - name: Checkout AMS Branch
@@ -156,26 +157,9 @@ jobs:
             fi
           fi
 
-      - name: Check for Existing Conflict Issue
-        id: conflict_check
-        if: steps.version_check.outputs.is_minor == 'true' && steps.changes_check.outputs.has_changes == 'true'
-        run: |
-          EXISTING=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=ams-sync-conflict" \
-            | jq 'length')
-
-          echo "Open conflict issues: $EXISTING"
-          echo "conflict_issue_exists=$( [ "$EXISTING" -gt 0 ] && echo true || echo false )" >> $GITHUB_OUTPUT
-
-          if [ "$EXISTING" -gt 0 ]; then
-            echo "⚠️ Unresolved conflict issue exists — skipping merge until resolved."
-          fi
-
       - name: Merge Main into AMS Branch
         id: merge_step
-        if: steps.version_check.outputs.is_minor == 'true' && steps.changes_check.outputs.has_changes == 'true' && steps.conflict_check.outputs.conflict_issue_exists == 'false'
+        if: steps.version_check.outputs.is_minor == 'true' && steps.changes_check.outputs.has_changes == 'true'
         env:
           SOURCE_TOKEN: ${{ secrets.SOURCE_TOKEN }}
         run: |
@@ -327,61 +311,16 @@ jobs:
               "text": "🔍 *Path 2 — Possible Silently-Dropped this.X Assignments*\n*Repo:* `${{ github.repository }}`\n*Synced to:* `${{ steps.merge_step.outputs.synced_sha }}`\nA `this.X = ...` assignment present before the merge no longer appears after it, with no conflict raised:\n```${{ steps.this_x_scan.outputs.dropped }}```\n_Notify-only — check the upstream commit(s) to see if this was deliberate._"
             }
 
-      - name: Create GitHub Issue on Conflict
-        id: create_issue
-        if: failure() && steps.merge_step.outputs.strategy == 'failed'
-        run: |
-          RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues" \
-            -d "{
-              \"title\": \"⚠️ AMS Sync Conflict: main → ${{ env.AMS_BRANCH }}\",
-              \"body\": \"## AMS Merge Conflict Detected\n\nThe automated merge from \`${{ env.SOURCE_BRANCH }}\` into \`${{ env.AMS_BRANCH }}\` failed due to a conflict.\n\n**Action required:** Manually resolve the conflict and close this issue to re-enable automated syncing.\n\n**Steps to resolve:**\n1. \`git fetch origin\`\n2. \`git checkout ${{ env.AMS_BRANCH }}\`\n3. \`git merge origin/${{ env.SOURCE_BRANCH }}\`\n4. Resolve conflicts manually\n5. \`git push origin ${{ env.AMS_BRANCH }}\`\n6. Close this issue\n\n**Failed run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n**Source SHA:** \`${{ steps.changes_check.outputs.source_sha }}\`\",
-              \"labels\": [\"ams-sync-conflict\"]
-            }")
-          ISSUE_URL=$(echo "$RESPONSE" | jq -r '.html_url')
-          echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
-
-      - name: Notify Slack on Paused (conflict gate)
-        if: steps.version_check.outputs.is_minor == 'true' && steps.changes_check.outputs.has_changes == 'true' && steps.conflict_check.outputs.conflict_issue_exists == 'true'
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": "⏸️ *Path 2 Paused — Open Conflict Issue Exists*\n*Repo:* `${{ github.repository }}`\n*Version:* `${{ steps.version_check.outputs.latest_tag }}`\n*Triggered by:* ${{ steps.version_check.outputs.trigger_reason }}\nAutomated merging is paused until the open `ams-sync-conflict` issue is closed."
-            }
-
       - name: Notify Slack on Conflict
-        if: failure() && steps.merge_step.outputs.strategy == 'failed' && steps.conflict_check.outputs.conflict_issue_exists == 'false'
+        if: failure() && steps.merge_step.outputs.strategy == 'failed'
         uses: slackapi/slack-github-action@v2.0.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "⚠️ *Path 2 AMS Merge Conflict!*\n*Repo:* `${{ github.repository }}`\n*Version:* `${{ steps.version_check.outputs.latest_tag }}`\nCould not merge `${{ env.SOURCE_BRANCH }}` into `${{ env.AMS_BRANCH }}`.\n\nAutomated merging is paused until the issue is closed.\n*Issue:* <${{ steps.create_issue.outputs.issue_url }}|View Conflict Issue>\n*Workflow:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Failed Run>"
+              "text": "⚠️ *Path 2 AMS Merge Conflict!*\n*Repo:* `${{ github.repository }}`\n*Version:* `${{ steps.version_check.outputs.latest_tag }}`\nCould not merge `${{ env.SOURCE_BRANCH }}` into `${{ env.AMS_BRANCH }}`.\n\nIssues are disabled on this repo (no tracking issue) -- resolve manually: fetch, merge, fix conflicts, push to `${{ env.AMS_BRANCH }}`, then re-run.\n*Workflow:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Failed Run>"
             }
-
-      - name: Close Conflict Issue on Success
-        if: steps.merge_step.outcome == 'success'
-        run: |
-          ISSUES=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=ams-sync-conflict" \
-            | jq '.[].number')
-
-          for ISSUE in $ISSUES; do
-            curl -s -X PATCH \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE" \
-              -d '{"state": "closed", "state_reason": "resolved"}'
-            echo "✅ Closed conflict issue #$ISSUE"
-          done
 
       - name: Notify Slack on Skipped (no new release)
         if: steps.version_check.outputs.is_minor == 'false'
