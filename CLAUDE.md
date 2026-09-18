@@ -4,7 +4,7 @@ AMS fork of the AEM Sidekick browser extension. Provides the author toolbar for 
 
 ## Rules
 
-@/Users/schmidt/Documents/git/eds_tools/ams-eds-terraform/.cursor/rules/development-standards-shared.md
+@../../eds_tools/ams-eds-terraform/.cursor/rules/development-standards-shared.md
 
 ## Stack
 
