@@ -33,3 +33,8 @@ The domain values come from the customer `.env` files in `ams-eds-terraform/envi
 source ../ams-eds-terraform/environments/ent-aem.env && npm run build
 source ../ams-eds-terraform/environments/ent-aem.env && npm run test
 ```
+
+## See Also
+
+- [extension-id.md](extension-id.md) — pinning the extension ID (`manifest key`) for
+  unpacked/self-hosted builds vs. the Chrome Web Store, and matching `SIDEKICK_ID`.

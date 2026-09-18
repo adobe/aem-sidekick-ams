@@ -138,7 +138,7 @@ function injectCustomerLocales(browser) {
       for (const locale of fs.readdirSync(localesDir)) {
         const contents = fs
           .readFileSync(nodePath.join(localesDir, locale, 'messages.json'), 'utf8')
-          .replaceAll('{{CUSTOMER}}', customerId);
+          .replaceAll('{{CUSTOMER}}', customerId.toUpperCase());
         const destDir = nodePath.join('dist', browser, '_locales', locale);
         fs.mkdirSync(destDir, { recursive: true });
         fs.writeFileSync(nodePath.join(destDir, 'messages.json'), contents);
