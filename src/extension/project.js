@@ -165,9 +165,9 @@ export async function getProjectFromUrl(tab) {
       return ghSettings;
     }
     try {
-      // check if aem.page, aem.live or aem.reviews url
+      // check if aem.page, aem.live, aem.reviews or aem.network url
       const { host } = new URL(url);
-      const res = new RegExp(`(.*--)?(.*)--(.*)--(.*)\\.(aem|hlx|${process.env.HLX_DOMAIN_PREFIX})\\.(page|live|reviews)`).exec(host);
+      const res = new RegExp(`(.*--)?(.*)--(.*)--(.*)\\.(aem|hlx|${process.env.HLX_DOMAIN_PREFIX})\\.(page|live|reviews|network)`).exec(host);
       const [,, urlRef, urlRepo, urlOwner] = res || [];
       if (urlOwner && urlRepo && urlRef) {
         return {
@@ -408,7 +408,7 @@ export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
   const any = '([0-9a-z-]+)';
   return host.endsWith(first)
-    && ['page', 'reviews', 'live'].includes(first)
+    && ['page', 'reviews', 'live', 'network'].includes(first)
     && ['aem', 'hlx', process.env.HLX_DOMAIN_PREFIX].includes(second)
     && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
 }

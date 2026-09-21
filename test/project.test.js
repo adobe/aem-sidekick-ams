@@ -397,6 +397,8 @@ describe('Test project', () => {
     expect(isValidHost('https://main--bar--foo.hlx.live', 'foo', 'bar')).to.be.true;
     expect(isValidHost('https://main--bar--foo.aem.page', 'foo', 'bar')).to.be.true;
     expect(isValidHost('https://main--bar--foo.aem.live', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--foo.aem.network', 'foo', 'bar')).to.be.true;
+    expect(isValidHost('https://main--bar--fake.aem.network', 'foo', 'bar')).to.be.false;
     expect(isValidHost('https://main--bar--fake.aem.live', 'foo', 'bar')).to.be.false;
     expect(isValidHost('https://main--bar--foo.aem.random', 'foo', 'bar')).to.be.false;
     expect(isValidHost('https://main--bar--foo.hlx.page', 'foo', 'bar')).to.be.true;
@@ -487,6 +489,10 @@ describe('Test project', () => {
       project: 'Blog',
       ...settings,
     });
+
+    // test aem.network url
+    const network = await getProjectFromUrl(mockTab('https://stage--blog--adobe.aem.network/products/foo'));
+    expect(network).to.eql(settings);
 
     // test no match
     const nomatch = await getProjectFromUrl(mockTab('https://blog.adobe.com'));

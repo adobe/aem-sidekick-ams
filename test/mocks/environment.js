@@ -42,6 +42,7 @@ export const HelixMockEnvironments = {
   PREVIEW: 'preview',
   REVIEW: 'review',
   LIVE: 'live',
+  MIXER: 'mixer',
   PROD: 'prod',
 };
 
@@ -96,6 +97,7 @@ export function getDefaultHelixEnviromentLocations(contentType) {
         preview: `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_PAGE}`,
         review: `https://default--main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_REVIEW}`,
         live: `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_LIVE}`,
+        mixer: `https://main--aem-boilerplate--adobe.${process.env.HLX_DOMAIN_PREFIX}.network`,
         prod: 'https://www.aemboilerplate.com',
       };
     case HelixMockContentType.SHEET:
@@ -104,6 +106,7 @@ export function getDefaultHelixEnviromentLocations(contentType) {
         preview: `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_PAGE}/placeholders.json`,
         review: `https://default--main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_REVIEW}/placeholders.json`,
         live: `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_LIVE}/placeholders.json`,
+        mixer: `https://main--aem-boilerplate--adobe.${process.env.HLX_DOMAIN_PREFIX}.network/placeholders.json`,
         prod: 'https://www.aemboilerplate.com/placeholders.json',
       };
     case HelixMockContentType.IMAGE:
@@ -112,6 +115,7 @@ export function getDefaultHelixEnviromentLocations(contentType) {
         preview: `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_PAGE}/media_foobar.png?width=750&format=png&optimize=medium`,
         review: `https://default--main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_REVIEW}/media_foobar.png?width=750&format=png&optimize=medium`,
         live: `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_LIVE}/media_foobar.png?width=750&format=png&optimize=medium`,
+        mixer: `https://main--aem-boilerplate--adobe.${process.env.HLX_DOMAIN_PREFIX}.network/media_foobar.png?width=750&format=png&optimize=medium`,
         prod: 'https://www.aemboilerplate.com/media_foobar.png?width=750&format=png&optimize=medium',
       };
     default:

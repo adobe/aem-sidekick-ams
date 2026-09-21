@@ -94,13 +94,16 @@ export function matchProjectHost(baseHost, host) {
   const previewSuffixes = ['.aem.page', '.hlx.page', `.${process.env.HLX_PROD_SERVER_HOST_PAGE}`];
   const reviewSuffixes = ['.aem.reviews', `.${process.env.HLX_DOMAIN_PREFIX}.reviews`];
   const liveSuffixes = ['.aem.live', '.hlx.live', `.${process.env.HLX_PROD_SERVER_HOST_LIVE}`];
+  const mixerSuffixes = ['.aem.network', `.${process.env.HLX_DOMAIN_PREFIX}.network`];
   const isPreview = previewSuffixes.some((suffix) => baseHost.endsWith(suffix))
       && previewSuffixes.some((suffix) => host.endsWith(suffix));
   const isLive = liveSuffixes.some((suffix) => baseHost.endsWith(suffix))
     && liveSuffixes.some((suffix) => host.endsWith(suffix));
   const isReview = reviewSuffixes.some((suffix) => baseHost.endsWith(suffix))
     && reviewSuffixes.some((suffix) => host.endsWith(suffix));
-  if (!isPreview && !isReview && !isLive) {
+  const isMixer = mixerSuffixes.some((suffix) => baseHost.endsWith(suffix))
+    && mixerSuffixes.some((suffix) => host.endsWith(suffix));
+  if (!isPreview && !isReview && !isLive && !isMixer) {
     return false;
   }
 

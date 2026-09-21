@@ -127,6 +127,7 @@ describe('Test Site Store', () => {
       expect(appStore.siteStore.stdOuterHost).to.equal(`main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_LIVE}`);
       expect(appStore.siteStore.outerHost).to.equal(`main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_LIVE}`);
       expect(appStore.siteStore.reviewHost).to.equal(`main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_REVIEW}`);
+      expect(appStore.siteStore.mixerHost).to.equal(`main--aem-boilerplate--adobe.${process.env.HLX_DOMAIN_PREFIX}.network`);
     });
 
     it('special views ', async () => {
