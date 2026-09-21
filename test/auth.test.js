@@ -598,9 +598,9 @@ describe('Test auth', () => {
     const matches = (url) => mainFrameRules
       .some(({ condition }) => new RegExp(condition.regexFilter).test(url));
 
-    expect(matches('https://main--site--test.aem.network/de/de/produkte/thermomix-tm7')).to.be.false;
-    expect(matches('https://main--site--test.aem.live/')).to.be.true;
-    expect(matches('https://main--site--other.aem.network/')).to.be.false;
+    expect(matches(`https://main--site--test.${process.env.HLX_DOMAIN_PREFIX}.network/de/de/produkte/thermomix-tm7`)).to.be.false;
+    expect(matches(`https://main--site--test.${process.env.HLX_DOMAIN_PREFIX}.live/`)).to.be.true;
+    expect(matches(`https://main--site--other.${process.env.HLX_DOMAIN_PREFIX}.network/`)).to.be.false;
 
     // clean up
     await setAuthToken(owner, repo, '', undefined, '', undefined);
