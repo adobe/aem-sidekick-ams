@@ -41,6 +41,14 @@ jobs:
       # Runs every time, independent of whether main has a new release to merge --
       # patch drift can be introduced by a renovate bump landing directly on main-ams
       # (e.g. a devDependency version moves but the matching patches/*.patch filename doesn't).
+      # Needed so the drift check below can verify against what actually gets
+      # installed (node_modules), not just package.json's direct dependency list --
+      # a patch on a transitive dependency (e.g. aws4, pulled in by another package)
+      # would otherwise always read as "orphaned" since it never appears in
+      # package.json directly.
+      - name: Install Dependencies (for patch-drift detection)
+        run: npm install --ignore-scripts --package-lock=false
+
       - name: Check Patch Files for Version Drift
         id: patch_drift_check
         run: |
@@ -56,9 +64,9 @@ jobs:
             base=$(basename "$f" .patch)
             PKG=$(echo "$base" | sed -E 's/\+[0-9]+\.[0-9]+\.[0-9]+.*$//' | sed -E 's/^(@[^+]+)\+/\1\//')
             VER=$(echo "$base" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^+]*$')
-            INSTALLED=$(jq -r --arg p "$PKG" '(.dependencies[$p] // .devDependencies[$p] // "MISSING")' package.json | sed -E 's/^[\^~]//')
+            INSTALLED=$(node -p "require('./node_modules/$PKG/package.json').version" 2>/dev/null || echo "MISSING")
             if [ "$INSTALLED" = "MISSING" ]; then
-              MISMATCHES="${MISMATCHES}${f}: ${PKG} no longer in package.json — patch may be orphaned\\n"
+              MISMATCHES="${MISMATCHES}${f}: ${PKG} not found in node_modules — patch may be orphaned\\n"
             elif [ "$INSTALLED" != "$VER" ]; then
               MISMATCHES="${MISMATCHES}${f}: patch pinned to ${VER}, package.json now has ${PKG}@${INSTALLED}\\n"
             fi
