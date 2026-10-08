@@ -47,7 +47,7 @@ jobs:
       # would otherwise always read as "orphaned" since it never appears in
       # package.json directly.
       - name: Install Dependencies (for patch-drift detection)
-        run: npm install --ignore-scripts --package-lock=false
+        run: npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Check Patch Files for Version Drift
         id: patch_drift_check
