@@ -19,7 +19,7 @@ jobs:
       # Synthetic values, not any real customer's domain/org — web-test-runner.config.mjs
       # only needs *some* value so it doesn't throw "Domain env vars not set"; nothing
       # in the test suite depends on these matching a real customer's AEM domain.
-      NODE_ENV: ci-test
+      HELIX_BUCKET_SUFFIX: ci-test
       HLX_PROD_SERVER_HOST_PAGE: ci-test.page
       HLX_PROD_SERVER_HOST_LIVE: ci-test.live
       HLX_PROD_SERVER_HOST_REVIEW: ci-test.reviews

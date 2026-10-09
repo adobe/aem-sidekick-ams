@@ -34,8 +34,8 @@ const babel = fromRollupCompat(rollupBabel);
 const hlxPage = process.env.HLX_PROD_SERVER_HOST_PAGE;
 const hlxLive = process.env.HLX_PROD_SERVER_HOST_LIVE;
 const hlxReview = process.env.HLX_PROD_SERVER_HOST_REVIEW;
-// customer slug, e.g. "ent-aem" (not a dev/prod mode flag here)
-const customerId = process.env.NODE_ENV;
+// customer slug, e.g. "eds-ca", taken from the env file's HELIX_BUCKET_SUFFIX
+const customerId = process.env.HELIX_BUCKET_SUFFIX;
 // GitHub org that owns the customer's tools/labs websites, e.g. "adobe-ssa-eds"
 const githubOrg = (process.env.GITHUB_ORG || '').toLowerCase();
 
@@ -79,7 +79,7 @@ export default {
   testRunnerHtml: (testFramework) => `
   <html>
     <body>
-      <script>window.process = { env: { NODE_ENV: "${customerId}", HLX_PROD_SERVER_HOST_PAGE: "${hlxPage}", HLX_PROD_SERVER_HOST_LIVE: "${hlxLive}", HLX_PROD_SERVER_HOST_REVIEW: "${hlxReview}", HLX_DOMAIN_PREFIX: "${domainPrefix}", GITHUB_ORG: "${githubOrg}" } }</script>
+      <script>window.process = { env: { HELIX_BUCKET_SUFFIX: "${customerId}", HLX_PROD_SERVER_HOST_PAGE: "${hlxPage}", HLX_PROD_SERVER_HOST_LIVE: "${hlxLive}", HLX_PROD_SERVER_HOST_REVIEW: "${hlxReview}", HLX_DOMAIN_PREFIX: "${domainPrefix}", GITHUB_ORG: "${githubOrg}" } }</script>
       <script type="module" src="${testFramework}"></script>
     </body>
   </html>`,

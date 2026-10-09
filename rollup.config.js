@@ -25,8 +25,8 @@ import sidekickManifestBuildPlugin from './build/build.js';
 
 const hlxPage = process.env.HLX_PROD_SERVER_HOST_PAGE;
 const hlxLive = process.env.HLX_PROD_SERVER_HOST_LIVE; // confirms env file was fully sourced
-// customer slug, e.g. "ent-aem" (not a dev/prod mode flag here)
-const customerId = process.env.NODE_ENV;
+// customer slug, e.g. "eds-ca", taken from the env file's HELIX_BUCKET_SUFFIX
+const customerId = process.env.HELIX_BUCKET_SUFFIX;
 // GitHub org that owns the customer's tools/labs websites, e.g. "adobe-ssa-eds".
 const githubOrg = (process.env.GITHUB_ORG || '').toLowerCase();
 
@@ -138,7 +138,7 @@ function injectCustomerLocales(browser) {
       for (const locale of fs.readdirSync(localesDir)) {
         const contents = fs
           .readFileSync(nodePath.join(localesDir, locale, 'messages.json'), 'utf8')
-          .replaceAll('{{CUSTOMER}}', customerId);
+          .replaceAll('{{CUSTOMER}}', customerId.toUpperCase());
         const destDir = nodePath.join('dist', browser, '_locales', locale);
         fs.mkdirSync(destDir, { recursive: true });
         fs.writeFileSync(nodePath.join(destDir, 'messages.json'), contents);
