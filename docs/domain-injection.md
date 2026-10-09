@@ -17,8 +17,11 @@ The domain values come from the customer `.env` files in `ams-eds-terraform/envi
 | `HLX_PROD_SERVER_HOST_PAGE` | Exported by the `.env` file | `ent-aem.page` |
 | `HLX_PROD_SERVER_HOST_LIVE` | Exported by the `.env` file | `ent-aem.live` |
 | `HLX_DOMAIN_PREFIX` | Derived at build time (strip `.page`) | `ent-aem` |
+| `HELIX_BUCKET_SUFFIX` | Exported by the `.env` file | `eds-ca` |
 
 `HLX_DOMAIN_PREFIX` is not exported by the `.env` file — it is computed by the build and test tooling.
+
+`HELIX_BUCKET_SUFFIX` identifies the customer environment. It is injected into the `{{CUSTOMER}}` placeholder in the locale files, upper-cased, so the extension name reads e.g. `AEM Sidekick - SSA - EDS-CA`. `NODE_ENV` is not used for this.
 
 ## Rules
 

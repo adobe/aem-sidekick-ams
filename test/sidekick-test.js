@@ -55,9 +55,9 @@ import {
 import { defaultOnboardingResponse, onboardingHtml } from './fixtures/onboarding.js';
 
 // mirrors rollup.config.js's injectCustomerLocales build plugin
-const customerId = /** @type {string} */ (process.env.NODE_ENV);
+const customerId = /** @type {string} */ (process.env.HELIX_BUCKET_SUFFIX);
 const enMessages = JSON.parse(
-  JSON.stringify(rawEnMessages).replace(/\{\{CUSTOMER\}\}/g, customerId),
+  JSON.stringify(rawEnMessages).replace(/\{\{CUSTOMER\}\}/g, customerId.toUpperCase()),
 );
 
 /**
