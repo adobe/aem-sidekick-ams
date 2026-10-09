@@ -15,6 +15,15 @@ import fs from 'fs-extra';
 // @ts-ignore
 import { ZipArchive } from 'archiver';
 
+// Fixed public key shared by every SSA deployment (eueds, entmseds, ...). Chrome
+// derives the extension ID deterministically from it, so all builds — on any
+// machine — install under the same stable ID (bobfaahioddffdkhnphohpkoehmcedib),
+// which every tools website targets as its SIDEKICK_ID. Deployments are told
+// apart by their display name, not their ID. It is a public key (ships in every
+// manifest), so it is safe to commit. Regenerating it changes the ID for all
+// deployments and requires updating every tools website's SIDEKICK_ID.
+const CRX_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn9TGgAB0SRyBSGHukpnhFNiXzpgNl1CFZJngDvT0JZQsBkUqplcHTzTqtWUiWn1pCll1c0PwcCFfBSwZqcDfstOnF6ycKOP8puYhAwWA8xryTPhvTKgnJWu82hzhoauxBxJZ1E+bLc74jg250yqnqBypsnWeYqs++lV8/9MY9cfh0JgfL7R2SGVWCyMRFo4SF4X9B/kG4Q53mImLferzHVSmBu/jCSAWOBh/6Lpf2oFRGfu4I3B6BCX7QexltJDXW+VwSxc0d4Fl74ooXPZWqwKqMr99hgM979/HtVcoKItstcIgE1zryh24lb7lxkM//nUXbdwGN8tGjeAjmVDl7QIDAQAB';
+
 function copyManifestKeys(sourceObj, browser) {
   const targetObj = {};
   Object.keys(sourceObj).forEach((sourceKey) => {
@@ -46,6 +55,14 @@ async function buildManifest(browser) {
   try {
     const sourceMF = await fs.readJson('./src/extension/manifest.json');
     targetMF = copyManifestKeys(sourceMF, browser);
+    // Pin the deterministic extension ID for SELF-DISTRIBUTION only (unpacked /
+    // self-hosted .crx). Opt-in via SIDEKICK_PIN_ID=true. It is intentionally
+    // OFF by default: the Chrome Web Store rejects any package containing a
+    // `key` field ("key field is not allowed in manifest") because the store
+    // assigns and owns the extension ID.
+    if (process.env.SIDEKICK_PIN_ID === 'true') {
+      targetMF.key = CRX_KEY;
+    }
   } catch (e) {
     throw new Error(`  failed to read source manifest.json: ${e.message}`);
   }
