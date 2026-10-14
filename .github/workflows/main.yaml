@@ -14,7 +14,7 @@ permissions:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: gh-hosted
     env:
       # Synthetic values, not any real customer's domain/org — web-test-runner.config.mjs
       # only needs *some* value so it doesn't throw "Domain env vars not set"; nothing
@@ -54,7 +54,7 @@ jobs:
 
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: gh-hosted
     needs: test
     if: github.ref == 'refs/heads/main'
     steps:
