@@ -162,7 +162,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: `^https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/(config/test\\.json|[a-z]+/test/.*)`,
             requestDomains: [
               `admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}`,
@@ -192,7 +192,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: `^https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/(test/.*|profile\\?org\\=test\\&)`,
             requestDomains: [
               `api.${process.env.HLX_PROD_SERVER_HOST_LIVE}`,
@@ -277,7 +277,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: `^https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/(config/test\\.json|[a-z]+/test/.*)`,
             requestDomains: [
               `admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}`,
@@ -307,7 +307,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: `^https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/(test/.*|profile\\?org\\=test\\&)`,
             requestDomains: [
               `api.${process.env.HLX_PROD_SERVER_HOST_LIVE}`,
@@ -464,7 +464,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: `^https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/(config/test\\.json|[a-z]+/test/.*)`,
             requestDomains: [
               `admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}`,
@@ -494,7 +494,7 @@ describe('Test auth', () => {
             ],
           },
           condition: {
-            excludedInitiatorDomains: ['da.live'],
+            excludedInitiatorDomains: ['da.live', 'aem.adobe.com'],
             regexFilter: `^https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/(test/.*|profile\\?org\\=test\\&)`,
             requestDomains: [
               `api.${process.env.HLX_PROD_SERVER_HOST_LIVE}`,
