@@ -1,0 +1,59 @@
+name: Build-ams
+on:
+  push:
+    branches:
+      - main-ams
+  pull_request:
+    branches:
+      - main-ams
+
+env:
+  CI_BUILD_NUM: ${{ github.run_id }}
+  CI_BRANCH: ${{ github.ref_name }}
+
+permissions:
+  id-token: write
+  contents: write  # semantic-release-dry verifies the write permissions
+  issues: read # needed by semantic-release
+  pull-requests: write # needed by semantic-release
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    env:
+      # Synthetic values, not any real customer's domain/org — web-test-runner.config.mjs
+      # only needs *some* value so it doesn't throw "Domain env vars not set"; nothing
+      # in the test suite depends on these matching a real customer's AEM domain.
+      HELIX_BUCKET_SUFFIX: ci-test
+      HLX_PROD_SERVER_HOST_PAGE: ci-test.page
+      HLX_PROD_SERVER_HOST_LIVE: ci-test.live
+      HLX_PROD_SERVER_HOST_REVIEW: ci-test.reviews
+      GITHUB_ORG: ci-test-org
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+
+      - name: Test
+        run: npm run test
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
