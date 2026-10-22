@@ -92,7 +92,7 @@ export function matchProjectHost(baseHost, host) {
   }
   // check for matching domain suffixes
   const previewSuffixes = ['.aem.page', '.hlx.page', `.${process.env.HLX_PROD_SERVER_HOST_PAGE}`];
-  const reviewSuffixes = ['.aem.reviews', `.${process.env.HLX_DOMAIN_PREFIX}.reviews`];
+  const reviewSuffixes = ['.aem.reviews', `.${process.env.HLX_PROD_SERVER_HOST_REVIEW}`];
   const liveSuffixes = ['.aem.live', '.hlx.live', `.${process.env.HLX_PROD_SERVER_HOST_LIVE}`];
   const mixerSuffixes = ['.aem.network', `.${process.env.HLX_DOMAIN_PREFIX}.network`];
   const isPreview = previewSuffixes.some((suffix) => baseHost.endsWith(suffix))

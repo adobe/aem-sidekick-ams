@@ -22,7 +22,7 @@ export function isErrorPage(location, document) {
     || location.host.endsWith('.aem.reviews')
     || location.host.endsWith(`.${process.env.HLX_PROD_SERVER_HOST_PAGE}`)
     || location.host.endsWith(`.${process.env.HLX_PROD_SERVER_HOST_LIVE}`)
-    || location.host.endsWith(`.${process.env.HLX_DOMAIN_PREFIX}.reviews`)
+    || location.host.endsWith(`.${process.env.HLX_PROD_SERVER_HOST_REVIEW}`)
     || location.hostname === 'localhost')
     && !document.querySelector('body > main > div')
     && document.querySelector('body > pre'));

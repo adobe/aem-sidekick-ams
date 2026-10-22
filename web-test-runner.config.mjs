@@ -33,7 +33,6 @@ const babel = fromRollupCompat(rollupBabel);
 
 const hlxPage = process.env.HLX_PROD_SERVER_HOST_PAGE;
 const hlxLive = process.env.HLX_PROD_SERVER_HOST_LIVE;
-const hlxReview = process.env.HLX_PROD_SERVER_HOST_REVIEW;
 // customer slug, e.g. "eds-ca", taken from the env file's HELIX_BUCKET_SUFFIX
 const customerId = process.env.HELIX_BUCKET_SUFFIX;
 // GitHub org that owns the customer's tools/labs websites, e.g. "adobe-ssa-eds"
@@ -45,7 +44,11 @@ if (!hlxPage || !hlxLive || !customerId) {
   );
 }
 
-const domainPrefix = hlxPage.replace(/\.page$/, '');
+const domainPrefix = hlxPage.split('.')[0];
+const hlxReview = process.env.HLX_PROD_SERVER_HOST_REVIEW || `${domainPrefix}.reviews`;
+const tlds = (...hosts) => hosts.map((host) => host.split('.').slice(1).join('[.]')).join('|');
+const domainTlds = tlds(hlxPage, hlxLive, hlxReview);
+const previewLiveTlds = tlds(hlxPage, hlxLive);
 
 export default {
   nodeResolve: true,
@@ -79,7 +82,7 @@ export default {
   testRunnerHtml: (testFramework) => `
   <html>
     <body>
-      <script>window.process = { env: { HELIX_BUCKET_SUFFIX: "${customerId}", HLX_PROD_SERVER_HOST_PAGE: "${hlxPage}", HLX_PROD_SERVER_HOST_LIVE: "${hlxLive}", HLX_PROD_SERVER_HOST_REVIEW: "${hlxReview}", HLX_DOMAIN_PREFIX: "${domainPrefix}", GITHUB_ORG: "${githubOrg}" } }</script>
+      <script>window.process = { env: { HELIX_BUCKET_SUFFIX: "${customerId}", HLX_PROD_SERVER_HOST_PAGE: "${hlxPage}", HLX_PROD_SERVER_HOST_LIVE: "${hlxLive}", HLX_PROD_SERVER_HOST_REVIEW: "${hlxReview}", HLX_DOMAIN_PREFIX: "${domainPrefix}", HLX_DOMAIN_TLDS: "${domainTlds}", HLX_PREVIEW_LIVE_TLDS: "${previewLiveTlds}", GITHUB_ORG: "${githubOrg}" } }</script>
       <script type="module" src="${testFramework}"></script>
     </body>
   </html>`,
