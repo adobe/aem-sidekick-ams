@@ -36,13 +36,13 @@ if (!hlxPage || !hlxLive || !customerId) {
   );
 }
 
-if (!hlxPage.endsWith('.page')) {
-  throw new Error(
-    `\nHLX_PROD_SERVER_HOST_PAGE must end with '.page' (got: '${hlxPage}').\n`,
-  );
-}
-
-const domainPrefix = hlxPage.replace(/\.page$/, '');
+// customer label, e.g. "eds-ca" (eds-ca.page) or "company" (company.aempage.us)
+const domainPrefix = hlxPage.split('.')[0];
+const hlxReview = process.env.HLX_PROD_SERVER_HOST_REVIEW || `${domainPrefix}.reviews`;
+// regexp alternations of the tld parts, i.e. everything after the customer label
+const tlds = (...hosts) => hosts.map((host) => host.split('.').slice(1).join('[.]')).join('|');
+const domainTlds = tlds(hlxPage, hlxLive, hlxReview);
+const previewLiveTlds = tlds(hlxPage, hlxLive);
 
 function shared(browser, path = '') {
   return {
@@ -73,7 +73,10 @@ function commonPlugins() {
         'process.env.NODE_ENV': JSON.stringify('production'),
         'process.env.HLX_PROD_SERVER_HOST_PAGE': JSON.stringify(hlxPage),
         'process.env.HLX_PROD_SERVER_HOST_LIVE': JSON.stringify(hlxLive),
+        'process.env.HLX_PROD_SERVER_HOST_REVIEW': JSON.stringify(hlxReview),
         'process.env.HLX_DOMAIN_PREFIX': JSON.stringify(domainPrefix),
+        'process.env.HLX_DOMAIN_TLDS': JSON.stringify(domainTlds),
+        'process.env.HLX_PREVIEW_LIVE_TLDS': JSON.stringify(previewLiveTlds),
         'process.env.GITHUB_ORG': JSON.stringify(githubOrg),
       },
     }),
@@ -90,12 +93,18 @@ function injectDomainVars(src) {
   return src
     .replaceAll('${process.env.HLX_PROD_SERVER_HOST_PAGE}', hlxPage)
     .replaceAll('${process.env.HLX_PROD_SERVER_HOST_LIVE}', hlxLive)
+    .replaceAll('${process.env.HLX_PROD_SERVER_HOST_REVIEW}', hlxReview)
     .replaceAll('${process.env.HLX_DOMAIN_PREFIX}', domainPrefix)
+    .replaceAll('${process.env.HLX_DOMAIN_TLDS}', domainTlds)
+    .replaceAll('${process.env.HLX_PREVIEW_LIVE_TLDS}', previewLiveTlds)
     .replaceAll('${process.env.GITHUB_ORG}', githubOrg)
     /* eslint-enable no-template-curly-in-string */
     .replaceAll('process.env.HLX_PROD_SERVER_HOST_PAGE', JSON.stringify(hlxPage))
     .replaceAll('process.env.HLX_PROD_SERVER_HOST_LIVE', JSON.stringify(hlxLive))
+    .replaceAll('process.env.HLX_PROD_SERVER_HOST_REVIEW', JSON.stringify(hlxReview))
     .replaceAll('process.env.HLX_DOMAIN_PREFIX', JSON.stringify(domainPrefix))
+    .replaceAll('process.env.HLX_DOMAIN_TLDS', JSON.stringify(domainTlds))
+    .replaceAll('process.env.HLX_PREVIEW_LIVE_TLDS', JSON.stringify(previewLiveTlds))
     .replaceAll('process.env.GITHUB_ORG', JSON.stringify(githubOrg));
 }
 

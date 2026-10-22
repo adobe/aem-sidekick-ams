@@ -273,11 +273,11 @@ export class SiteStore {
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
-    const domain = previewHost?.endsWith('.aem.page') ? 'aem' : process.env.HLX_DOMAIN_PREFIX;
-    const stdInnerHost = hostPrefix ? `${hostPrefix}.${domain}.page` : null;
-    const stdOuterHost = hostPrefix ? `${hostPrefix}.${domain}.live` : null;
-    const stdReviewHost = hostPrefix ? `${hostPrefix}.${domain}.reviews` : null;
-    const mixerHost = hostPrefix ? `${hostPrefix}.${domain}.network` : null;
+    const aem = previewHost?.endsWith('.aem.page');
+    const stdInnerHost = hostPrefix ? `${hostPrefix}.${aem ? 'aem.page' : process.env.HLX_PROD_SERVER_HOST_PAGE}` : null;
+    const stdOuterHost = hostPrefix ? `${hostPrefix}.${aem ? 'aem.live' : process.env.HLX_PROD_SERVER_HOST_LIVE}` : null;
+    const stdReviewHost = hostPrefix ? `${hostPrefix}.${aem ? 'aem.reviews' : process.env.HLX_PROD_SERVER_HOST_REVIEW}` : null;
+    const mixerHost = hostPrefix ? `${hostPrefix}.${aem ? 'aem' : process.env.HLX_DOMAIN_PREFIX}.network` : null;
     const devUrl = new URL(devOrigin);
 
     // default views

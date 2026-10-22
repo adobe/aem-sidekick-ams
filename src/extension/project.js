@@ -167,7 +167,7 @@ export async function getProjectFromUrl(tab) {
     try {
       // check if aem.page, aem.live, aem.reviews or aem.network url
       const { host } = new URL(url);
-      const res = new RegExp(`(.*--)?(.*)--(.*)--(.*)\\.(aem|hlx|${process.env.HLX_DOMAIN_PREFIX})\\.(page|live|reviews|network)`).exec(host);
+      const res = new RegExp(`(.*--)?(.*)--(.*)--(.*)\\.(aem|hlx|${process.env.HLX_DOMAIN_PREFIX})\\.(page|live|reviews|network|${process.env.HLX_DOMAIN_TLDS})`).exec(host);
       const [,, urlRef, urlRepo, urlOwner] = res || [];
       if (urlOwner && urlRepo && urlRef) {
         return {
@@ -407,9 +407,15 @@ export async function toggleProject(project) {
 export function isValidHost(host, owner, repo) {
   const [third, second, first] = host.split('.');
   const any = '([0-9a-z-]+)';
-  return host.endsWith(first)
+  const validDomain = (host.endsWith(first)
     && ['page', 'reviews', 'live', 'network'].includes(first)
-    && ['aem', 'hlx', process.env.HLX_DOMAIN_PREFIX].includes(second)
+    && ['aem', 'hlx', process.env.HLX_DOMAIN_PREFIX].includes(second))
+    || [
+      process.env.HLX_PROD_SERVER_HOST_PAGE,
+      process.env.HLX_PROD_SERVER_HOST_LIVE,
+      process.env.HLX_PROD_SERVER_HOST_REVIEW,
+    ].some((domain) => host.endsWith(`.${domain}`));
+  return validDomain
     && new RegExp(`--${repo || any}--${owner || any}$`, 'i').test(third);
 }
 
