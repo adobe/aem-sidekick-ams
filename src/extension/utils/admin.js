@@ -16,7 +16,7 @@
  * @property {string} [repo] The name of the repository.
  * @property {string} [ref='main'] The reference branch, defaults to 'main'.
  * @property {string} [adminVersion] The version of the admin service to use.
- * @property {boolean} [apiUpgrade=false] <code>true</code> if the API upgrade is available.
+ * @property {boolean} [apiUpgrade=true] <code>true</code> if the new Admin API should be used.
  */
 
 /**
@@ -43,7 +43,7 @@ export const ADMIN_ORIGIN_NEW = `https://api.${process.env.HLX_PROD_SERVER_HOST_
  */
 export function createAdminUrl(
   {
-    owner: org, repo: site, ref = 'main', apiUpgrade, adminVersion,
+    owner: org, repo: site, ref = 'main', apiUpgrade = true, adminVersion,
   },
   api,
   path = '',
@@ -105,7 +105,7 @@ export async function callAdmin(
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
   // force async processing for bulk jobs with api upgrade
-  if (body && config.apiUpgrade && ['preview', 'live'].includes(api) && path === '/*') {
+  if (body && config.apiUpgrade !== false && ['preview', 'live'].includes(api) && path === '/*') {
     body.forceAsync = true;
   }
   return fetch(url, {

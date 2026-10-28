@@ -1719,7 +1719,7 @@ describe('Test App Store', () => {
 
     it('exits early if "path" search param is present', async () => {
       sidekickTest.mockFetchSidekickConfigSuccess(true, false);
-      fetchMock.get(`https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/status/adobe/aem-boilerplate/main/path/placeholders.json?editUrl=auto`, {
+      fetchMock.get(`https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/adobe/sites/aem-boilerplate/status/path/placeholders.json?editUrl=auto`, {
         status: 200,
         body: {
           body: { },

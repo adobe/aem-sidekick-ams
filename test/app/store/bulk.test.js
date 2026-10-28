@@ -275,7 +275,7 @@ describe('Test Bulk Store', () => {
 
       // catch any stray job requests to admin api
       fetchMock.sticky(
-        `glob:https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/job/*`,
+        `glob:https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/adobe/sites/aem-boilerplate/jobs/*`,
         { status: 200, body: {} },
         { overwriteRoutes: true },
       );
@@ -584,7 +584,7 @@ describe('Test Bulk Store', () => {
       it('shows toast on 401 response', async () => {
         startJobStub.restore();
         fetchMock.post(
-          `https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/preview/adobe/aem-boilerplate/main/*`,
+          `https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/adobe/sites/aem-boilerplate/preview/*`,
           { status: 401, body: {} },
           { overwriteRoutes: true },
         );
@@ -606,7 +606,7 @@ describe('Test Bulk Store', () => {
       it('shows toast on 403 response', async () => {
         startJobStub.restore();
         fetchMock.post(
-          `https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/preview/adobe/aem-boilerplate/main/*`,
+          `https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/adobe/sites/aem-boilerplate/preview/*`,
           { status: 403, body: {} },
           { overwriteRoutes: true },
         );
@@ -920,7 +920,7 @@ describe('Test Bulk Store', () => {
       it('shows toast on 401 response', async () => {
         startJobStub.restore();
         fetchMock.post(
-          `https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/live/adobe/aem-boilerplate/main/*`,
+          `https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/adobe/sites/aem-boilerplate/live/*`,
           { status: 401, body: {} },
           { overwriteRoutes: true },
         );

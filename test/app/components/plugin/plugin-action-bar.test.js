@@ -488,7 +488,7 @@ describe('Plugin action bar', () => {
 
     it('overrides core plugin', async () => {
       sidekickTest
-        .mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, `https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/status/adobe/aem-boilerplate/main/en/drafts/test`)
+        .mockFetchStatusSuccess(false, {}, HelixMockContentSources.SHAREPOINT, `https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}/adobe/sites/aem-boilerplate/status/en/drafts/test`)
         .mockFetchSidekickConfigSuccess(true, true)
         .mockHelixEnvironment(HelixMockEnvironments.PREVIEW, undefined, `https://main--aem-boilerplate--adobe.${process.env.HLX_PROD_SERVER_HOST_PAGE}/en/drafts/test`);
 
