@@ -65,6 +65,9 @@ export function createAdminUrl(
         }
         adminUrl.pathname = `/${org}/sites/${site}/${api}`;
       }
+      if (path === '/*') {
+        path = '/';
+      }
     } else {
       // use legacy api
       adminUrl.pathname = `/${api}/${org}/${site}/${ref}`;
