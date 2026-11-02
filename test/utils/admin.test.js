@@ -12,7 +12,7 @@
 
 import sinon from 'sinon';
 import { expect } from '@open-wc/testing';
-import { createAdminUrl, callAdmin } from '../../src/extension/utils/admin.js';
+import { createAdminUrl, callAdmin, isApiUpgradeAvailable } from '../../src/extension/utils/admin.js';
 
 describe('helix-admin', () => {
   const siteStore = {
@@ -206,6 +206,49 @@ describe('helix-admin', () => {
       const options = fetchStub.getCall(0).args[1];
       const body = JSON.parse(options.body);
       expect(body.forceAsync).to.equal(undefined);
+    });
+  });
+
+  describe('built with SIDEKICK_API_UPGRADE=false', () => {
+    const sandbox = sinon.createSandbox();
+    let fetchStub;
+    let original;
+
+    beforeEach(() => {
+      original = process.env.SIDEKICK_API_UPGRADE;
+      process.env.SIDEKICK_API_UPGRADE = 'false';
+      fetchStub = sandbox.stub(window, 'fetch');
+    });
+
+    afterEach(() => {
+      process.env.SIDEKICK_API_UPGRADE = original;
+      sandbox.restore();
+    });
+
+    it('reports the new api as unavailable', () => {
+      expect(isApiUpgradeAvailable()).to.equal(false);
+    });
+
+    it('uses the legacy api even when the new api is requested', () => {
+      const url = createAdminUrl({ ...siteStore, apiUpgrade: true }, 'status', '/path');
+      expect(url.toString()).to.equal(`https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/status/adobe/aem-boilerplate/main/path`);
+    });
+
+    it('signs in through the legacy api', () => {
+      const url = createAdminUrl(siteStore, 'login');
+      expect(url.toString()).to.equal(`https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/login/adobe/aem-boilerplate/main`);
+    });
+
+    it('uses the legacy discover endpoint', () => {
+      const url = createAdminUrl({ apiUpgrade: true }, 'discover', '', new URLSearchParams('url=https://example.com'));
+      expect(url.toString()).to.equal(`https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/discover?url=https%3A%2F%2Fexample.com`);
+    });
+
+    it('omits forceAsync for bulk jobs', async () => {
+      await callAdmin(siteStore, 'preview', '/*', { body: { paths: ['/foo'] } });
+      const [url, options] = fetchStub.getCall(0).args;
+      expect(url.toString()).to.equal(`https://admin.${process.env.HLX_PROD_SERVER_HOST_PAGE}/preview/adobe/aem-boilerplate/main/*`);
+      expect(JSON.parse(options.body).forceAsync).to.equal(undefined);
     });
   });
 });

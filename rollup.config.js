@@ -43,6 +43,9 @@ const hlxReview = process.env.HLX_PROD_SERVER_HOST_REVIEW || `${domainPrefix}.re
 const tlds = (...hosts) => hosts.map((host) => host.split('.').slice(1).join('[.]')).join('|');
 const domainTlds = tlds(hlxPage, hlxLive, hlxReview);
 const previewLiveTlds = tlds(hlxPage, hlxLive);
+// "false" for environments whose new Admin API (api.<live host>) has no sign-in for their identity
+// provider (e.g. Okta-only): the sidekick then uses the legacy Admin API (admin.<page host>) only.
+const apiUpgrade = process.env.SIDEKICK_API_UPGRADE === 'false' ? 'false' : 'true';
 
 function shared(browser, path = '') {
   return {
@@ -78,6 +81,7 @@ function commonPlugins() {
         'process.env.HLX_DOMAIN_TLDS': JSON.stringify(domainTlds),
         'process.env.HLX_PREVIEW_LIVE_TLDS': JSON.stringify(previewLiveTlds),
         'process.env.GITHUB_ORG': JSON.stringify(githubOrg),
+        'process.env.SIDEKICK_API_UPGRADE': JSON.stringify(apiUpgrade),
       },
     }),
     /** Minify JS, compile JS to a lower language target */
@@ -105,7 +109,8 @@ function injectDomainVars(src) {
     .replaceAll('process.env.HLX_DOMAIN_PREFIX', JSON.stringify(domainPrefix))
     .replaceAll('process.env.HLX_DOMAIN_TLDS', JSON.stringify(domainTlds))
     .replaceAll('process.env.HLX_PREVIEW_LIVE_TLDS', JSON.stringify(previewLiveTlds))
-    .replaceAll('process.env.GITHUB_ORG', JSON.stringify(githubOrg));
+    .replaceAll('process.env.GITHUB_ORG', JSON.stringify(githubOrg))
+    .replaceAll('process.env.SIDEKICK_API_UPGRADE', JSON.stringify(apiUpgrade));
 }
 
 function extensionPlugins(browser) {

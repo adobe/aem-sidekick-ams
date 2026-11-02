@@ -23,6 +23,16 @@ The domain values come from the customer `.env` files in `ams-eds-terraform/envi
 
 `HELIX_BUCKET_SUFFIX` identifies the customer environment. It is injected into the `{{CUSTOMER}}` placeholder in the locale files, upper-cased, so the extension name reads e.g. `AEM Sidekick - SSA - EDS-CA`. `NODE_ENV` is not used for this.
 
+### `SIDEKICK_API_UPGRADE` (optional)
+
+By default the sidekick talks to the new Admin API (`api.<HLX_PROD_SERVER_HOST_LIVE>`). The new API's `/login` only knows the upstream identity providers. Environments that sign in with another provider, such as Okta-only environments (helix-admin pinned to `HLX_ADMIN_AUTH_PROVIDER=okta`), must build with `SIDEKICK_API_UPGRADE=false`. Every admin call, including sign-in, then goes to the legacy Admin API (`admin.<HLX_PROD_SERVER_HOST_PAGE>`), which offers the environment's provider. Without it, "Sign in" redirects to Adobe IMS and fails.
+
+```sh
+source ../ams-eds-terraform/environments/afsvc.env && SIDEKICK_API_UPGRADE=false npm run build
+```
+
+Any other value, or leaving it unset, keeps the upstream behavior.
+
 ## Rules
 
 - **No hard-coded domain strings in source.** All domain values must use the `process.env.*` references above. This applies to source files and test files.
