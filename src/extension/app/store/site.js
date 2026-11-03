@@ -13,7 +13,7 @@
 // import { property } from 'lit/decorators.js';
 import { observable, action } from 'mobx';
 import { log } from '../../log.js';
-import { callAdmin } from '../../utils/admin.js';
+import { callAdmin, isApiUpgradeAvailable } from '../../utils/admin.js';
 import { getLanguage } from '../utils/i18n.js';
 
 /**
@@ -220,7 +220,7 @@ export class SiteStore {
       devOrigin = 'http://localhost:3000';
     }
     // use the new admin api unless the project config explicitly opts out
-    const projectApiUpgrade = config.apiUpgrade !== false;
+    const projectApiUpgrade = isApiUpgradeAvailable() && config.apiUpgrade !== false;
     let serverApiUpgrade;
     if (owner && repo) {
       // look for custom config in project
@@ -274,7 +274,7 @@ export class SiteStore {
       wordSaveDelay,
       transient = false,
     } = config;
-    const apiUpgrade = serverApiUpgrade ?? projectApiUpgrade;
+    const apiUpgrade = isApiUpgradeAvailable() && (serverApiUpgrade ?? projectApiUpgrade);
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
     const aem = previewHost?.endsWith('.aem.page');
