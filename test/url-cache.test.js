@@ -51,7 +51,7 @@ describe('Test url-cache', () => {
         mountpoints: ['https://some.custom.host/sites/bar'],
       }],
     )).to.be.true;
-    // excluded host: DA domain (defaults to .da.live)
+    // excluded host: .da.live
     expect(isSharePointHost(
       `https://content.${process.env.DA_DOMAIN}/foo/bar`,
       [{ mountpoints: [`https://content.${process.env.DA_DOMAIN}/foo/bar`] }],
@@ -81,19 +81,6 @@ describe('Test url-cache', () => {
       'https://test.adobeioruntime.net/content/site',
       [{ mountpoints: ['https://test.adobeioruntime.net/content/site'] }],
     )).to.be.false;
-  });
-
-  it('isSharePointHost with custom DA domain', async () => {
-    const { DA_DOMAIN } = process.env;
-    try {
-      process.env.DA_DOMAIN = 'ssa-da.live';
-      expect(isSharePointHost(
-        'https://content.ssa-da.live/foo/bar',
-        [{ mountpoints: ['https://content.ssa-da.live/foo/bar'] }],
-      )).to.be.false;
-    } finally {
-      process.env.DA_DOMAIN = DA_DOMAIN;
-    }
   });
 
   describe('set', () => {

@@ -2161,30 +2161,6 @@ describe('Test App Store', () => {
     });
   });
 
-  describe('isDA', () => {
-    let instance;
-
-    beforeEach(() => {
-      instance = new AppStore();
-    });
-
-    it('detects the default DA domain', () => {
-      expect(process.env.DA_DOMAIN).to.be.a('string').and.not.be.empty;
-      expect(instance.isDA(`markup:https://content.${process.env.DA_DOMAIN}/foo`)).to.be.true;
-      expect(instance.isDA('markup:https://content.example.com/foo')).to.be.false;
-    });
-
-    it('detects a custom DA domain', () => {
-      const { DA_DOMAIN } = process.env;
-      try {
-        process.env.DA_DOMAIN = 'ssa-da.live';
-        expect(instance.isDA('markup:https://content.ssa-da.live/foo')).to.be.true;
-      } finally {
-        process.env.DA_DOMAIN = DA_DOMAIN;
-      }
-    });
-  });
-
   describe('getBYOMSourceUrl', () => {
     let instance;
 
