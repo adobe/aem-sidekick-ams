@@ -53,8 +53,8 @@ describe('Test url-cache', () => {
     )).to.be.true;
     // excluded host: .da.live
     expect(isSharePointHost(
-      'https://content.da.live/foo/bar',
-      [{ mountpoints: ['https://content.da.live/foo/bar'] }],
+      `https://content.${process.env.DA_DOMAIN}/foo/bar`,
+      [{ mountpoints: [`https://content.${process.env.DA_DOMAIN}/foo/bar`] }],
     )).to.be.false;
     // excluded host: .google.com
     expect(isSharePointHost(

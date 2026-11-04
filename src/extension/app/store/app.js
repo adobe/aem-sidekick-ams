@@ -701,7 +701,7 @@ export class AppStore {
   isDA(contentSourceUrl) {
     try {
       const { hostname } = new URL(contentSourceUrl.substring(7));
-      return hostname.endsWith('.da.live');
+      return hostname.endsWith(`.${process.env.DA_DOMAIN}`);
     } catch (e) {
       return false;
     }
