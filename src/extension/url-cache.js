@@ -33,7 +33,7 @@ export function isSharePointHost(url, projects = []) {
       return mp && new URL(mp).host === host
         && ![
           '.google.com',
-          '.da.live',
+          `.${process.env.DA_DOMAIN}`,
           '.adobeaemcloud.com',
           '.adobecqms.net',
           '.adobeio-static.net',
