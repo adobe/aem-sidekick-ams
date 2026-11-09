@@ -29,6 +29,8 @@ const hlxLive = process.env.HLX_PROD_SERVER_HOST_LIVE; // confirms env file was 
 const customerId = process.env.HELIX_BUCKET_SUFFIX;
 // GitHub org that owns the customer's tools/labs websites, e.g. "adobe-ssa-eds".
 const githubOrg = (process.env.GITHUB_ORG || '').toLowerCase();
+// Document Authoring domain, e.g. "ssa-da.live" for sovereign builds (defaults to commercial)
+const daDomain = process.env.DA_DOMAIN || 'da.live';
 
 if (!hlxPage || !hlxLive || !customerId) {
   throw new Error(
@@ -81,6 +83,7 @@ function commonPlugins() {
         'process.env.HLX_DOMAIN_TLDS': JSON.stringify(domainTlds),
         'process.env.HLX_PREVIEW_LIVE_TLDS': JSON.stringify(previewLiveTlds),
         'process.env.GITHUB_ORG': JSON.stringify(githubOrg),
+        'process.env.DA_DOMAIN': JSON.stringify(daDomain),
         'process.env.SIDEKICK_API_UPGRADE': JSON.stringify(apiUpgrade),
       },
     }),
@@ -102,6 +105,7 @@ function injectDomainVars(src) {
     .replaceAll('${process.env.HLX_DOMAIN_TLDS}', domainTlds)
     .replaceAll('${process.env.HLX_PREVIEW_LIVE_TLDS}', previewLiveTlds)
     .replaceAll('${process.env.GITHUB_ORG}', githubOrg)
+    .replaceAll('${process.env.DA_DOMAIN}', daDomain)
     /* eslint-enable no-template-curly-in-string */
     .replaceAll('process.env.HLX_PROD_SERVER_HOST_PAGE', JSON.stringify(hlxPage))
     .replaceAll('process.env.HLX_PROD_SERVER_HOST_LIVE', JSON.stringify(hlxLive))
@@ -110,6 +114,7 @@ function injectDomainVars(src) {
     .replaceAll('process.env.HLX_DOMAIN_TLDS', JSON.stringify(domainTlds))
     .replaceAll('process.env.HLX_PREVIEW_LIVE_TLDS', JSON.stringify(previewLiveTlds))
     .replaceAll('process.env.GITHUB_ORG', JSON.stringify(githubOrg))
+    .replaceAll('process.env.DA_DOMAIN', JSON.stringify(daDomain))
     .replaceAll('process.env.SIDEKICK_API_UPGRADE', JSON.stringify(apiUpgrade));
 }
 

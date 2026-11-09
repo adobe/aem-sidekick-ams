@@ -243,6 +243,22 @@ jobs:
               | awk '/^\+/ && !/^\+\+\+/' \
               | grep -oE '(aem|hlx)\\?\.' \
               | sort -u | paste -sd ',' - || true)
+            # da.live / aem.reviews usually sit inside URLs or template strings, so they are
+            # matched as hostname fragments (also regex-escaped `da\.live`), not quoted strings.
+            # Lookalikes (foo-da.live, gov-aem.reviews, da.liver), comments, and lines that
+            # already read the build variable (e.g. `process.env.DA_DOMAIN || 'da.live'`) are skipped.
+            HOSTS=$(git diff "$PRE" "$POST" -- "$f" 2>/dev/null \
+              | awk '/^\+/ && !/^\+\+\+/' \
+              | perl -ne '
+                  s/^\+//;
+                  next if m{^\s*(//|/\*|\*)};
+                  s{\s//.*$}{};
+                  if (/(?<![\w-])da\\?\.live(?![\w-])/ && !/\bDA_DOMAIN/) { $h{"da.live->DA_DOMAIN"} = 1 }
+                  if (/(?<![\w-])aem\\?\.reviews(?![\w-])/ && !/\bHLX_PROD_SERVER_HOST_REVIEW\b/) { $h{"aem.reviews->HLX_PROD_SERVER_HOST_REVIEW"} = 1 }
+                  END { print join(",", sort keys %h) }' || true)
+            if [ -n "$HOSTS" ]; then
+              MATCHES="${MATCHES:+$MATCHES,}${HOSTS}"
+            fi
             if [ -n "$MATCHES" ]; then
               FINDINGS="${FINDINGS}${f}: ${MATCHES}\\n"
             fi
@@ -271,7 +287,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "🔍 *Path 2 — Possible Env-Templatization Candidates*\n*Repo:* `${{ github.repository }}`\n*Synced to:* `${{ steps.merge_step.outputs.synced_sha }}`\nNewly merged lines in `src/` contain patterns that look like hardcoded domain values. Some may be intentional (e.g. `tools.aem.live`); others may need `process.env.HLX_PROD_SERVER_HOST_PAGE`/`_LIVE`/`HLX_DOMAIN_PREFIX`:\n```${{ steps.templatization_scan.outputs.findings }}```\n_Notify-only — the merge already completed; nothing is blocked._"
+              "text": "🔍 *Path 2 — Possible Env-Templatization Candidates*\n*Repo:* `${{ github.repository }}`\n*Synced to:* `${{ steps.merge_step.outputs.synced_sha }}`\nNewly merged lines in `src/` contain patterns that look like hardcoded domain values. Some may be intentional (e.g. `tools.aem.live`); others may need `process.env.HLX_PROD_SERVER_HOST_PAGE`/`_LIVE`/`_REVIEW`/`DA_DOMAIN`/`HLX_DOMAIN_PREFIX`:\n```${{ steps.templatization_scan.outputs.findings }}```\n_Notify-only — the merge already completed; nothing is blocked._"
             }
 
       # Non-conflicting 3-way merges can silently drop an AMS-authored `this.X = ...`

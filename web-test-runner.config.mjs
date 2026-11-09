@@ -37,6 +37,8 @@ const hlxLive = process.env.HLX_PROD_SERVER_HOST_LIVE;
 const customerId = process.env.HELIX_BUCKET_SUFFIX;
 // GitHub org that owns the customer's tools/labs websites, e.g. "adobe-ssa-eds"
 const githubOrg = (process.env.GITHUB_ORG || '').toLowerCase();
+// Document Authoring domain, e.g. "ssa-da.live" for sovereign builds (defaults to commercial)
+const daDomain = process.env.DA_DOMAIN || 'da.live';
 
 if (!hlxPage || !hlxLive || !customerId) {
   throw new Error(
@@ -82,7 +84,7 @@ export default {
   testRunnerHtml: (testFramework) => `
   <html>
     <body>
-      <script>window.process = { env: { HELIX_BUCKET_SUFFIX: "${customerId}", HLX_PROD_SERVER_HOST_PAGE: "${hlxPage}", HLX_PROD_SERVER_HOST_LIVE: "${hlxLive}", HLX_PROD_SERVER_HOST_REVIEW: "${hlxReview}", HLX_DOMAIN_PREFIX: "${domainPrefix}", HLX_DOMAIN_TLDS: "${domainTlds}", HLX_PREVIEW_LIVE_TLDS: "${previewLiveTlds}", GITHUB_ORG: "${githubOrg}", SIDEKICK_API_UPGRADE: "${process.env.SIDEKICK_API_UPGRADE === 'false' ? 'false' : 'true'}" } }</script>
+      <script>window.process = { env: { HELIX_BUCKET_SUFFIX: "${customerId}", HLX_PROD_SERVER_HOST_PAGE: "${hlxPage}", HLX_PROD_SERVER_HOST_LIVE: "${hlxLive}", HLX_PROD_SERVER_HOST_REVIEW: "${hlxReview}", HLX_DOMAIN_PREFIX: "${domainPrefix}", HLX_DOMAIN_TLDS: "${domainTlds}", HLX_PREVIEW_LIVE_TLDS: "${previewLiveTlds}", GITHUB_ORG: "${githubOrg}", DA_DOMAIN: "${daDomain}", SIDEKICK_API_UPGRADE: "${process.env.SIDEKICK_API_UPGRADE === 'false' ? 'false' : 'true'}" } }</script>
       <script type="module" src="${testFramework}"></script>
     </body>
   </html>`,
