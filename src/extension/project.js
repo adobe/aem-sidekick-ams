@@ -17,7 +17,7 @@ import {
   setConfig,
 } from './config.js';
 import { urlCache } from './url-cache.js';
-import { callAdmin, createAdminUrl } from './utils/admin.js';
+import { callAdmin, createAdminUrl, isApiUpgradeAvailable } from './utils/admin.js';
 import { setAuthToken } from './auth.js';
 
 export const DEV_URL = 'http://localhost:3000/';
@@ -315,7 +315,7 @@ export async function getProjectEnv({
         owner, repo, ref, apiUpgrade,
       },
       'sidekick',
-      apiUpgrade ? '' : '/config.json',
+      apiUpgrade && isApiUpgradeAvailable() ? '' : '/config.json',
     );
   } catch (e) {
     log.warn(`getProjectEnv: unable to retrieve project config: ${e}`);

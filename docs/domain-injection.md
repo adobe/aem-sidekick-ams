@@ -26,6 +26,16 @@ The domain values come from the customer `.env` files in `ams-eds-terraform/envi
 
 `DA_DOMAIN` is the Document Authoring domain. It is used to exclude DA from admin auth token injection and to detect DA content sources. When unset, the commercial `da.live` is used.
 
+### `SIDEKICK_API_UPGRADE` (optional)
+
+By default the sidekick talks to the new Admin API (`api.<HLX_PROD_SERVER_HOST_LIVE>`). The new API's `/login` only knows the upstream identity providers. Environments that sign in with another provider, such as Okta-only environments (helix-admin pinned to `HLX_ADMIN_AUTH_PROVIDER=okta`), must build with `SIDEKICK_API_UPGRADE=false`. Every admin call, including sign-in, then goes to the legacy Admin API (`admin.<HLX_PROD_SERVER_HOST_PAGE>`), which offers the environment's provider. Without it, "Sign in" redirects to Adobe IMS and fails.
+
+```sh
+source ../ams-eds-terraform/environments/afsvc.env && SIDEKICK_API_UPGRADE=false npm run build
+```
+
+Any other value, or leaving it unset, keeps the upstream behavior.
+
 ## Rules
 
 - **No hard-coded domain strings in source.** All domain values must use the `process.env.*` references above. This applies to source files and test files.

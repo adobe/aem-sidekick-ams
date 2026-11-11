@@ -34,6 +34,16 @@ export const ADMIN_ORIGIN = `https://admin.${process.env.HLX_PROD_SERVER_HOST_PA
 export const ADMIN_ORIGIN_NEW = `https://api.${process.env.HLX_PROD_SERVER_HOST_LIVE}`;
 
 /**
+ * Returns <code>false</code> in builds for environments whose new Admin API can't sign users in
+ * with the environment's identity provider (built with <code>SIDEKICK_API_UPGRADE=false</code>,
+ * e.g. Okta-only environments). Every admin call then uses the legacy Admin API, which can.
+ * @returns {boolean} <code>true</code> if the new Admin API may be used
+ */
+export function isApiUpgradeAvailable() {
+  return process.env.SIDEKICK_API_UPGRADE !== 'false';
+}
+
+/**
  * Creates an Admin API URL for an API and path.
  * @param {AdminUrlConfig} config The sidekick config object
  * @param {string} api The API endpoint to call
@@ -43,12 +53,13 @@ export const ADMIN_ORIGIN_NEW = `https://api.${process.env.HLX_PROD_SERVER_HOST_
  */
 export function createAdminUrl(
   {
-    owner: org, repo: site, ref = 'main', apiUpgrade = true, adminVersion,
+    owner: org, repo: site, ref = 'main', apiUpgrade: requestedApiUpgrade = true, adminVersion,
   },
   api,
   path = '',
   searchParams = new URLSearchParams(),
 ) {
+  const apiUpgrade = requestedApiUpgrade && isApiUpgradeAvailable();
   const adminUrl = new URL(`${apiUpgrade ? ADMIN_ORIGIN_NEW : ADMIN_ORIGIN}`);
   if (api === 'discover') {
     adminUrl.pathname = `/${api}${path}`;
@@ -108,7 +119,7 @@ export async function callAdmin(
 ) {
   const url = createAdminUrl(config, api, path, searchParams);
   // force async processing for bulk jobs with api upgrade
-  if (body && config.apiUpgrade !== false && ['preview', 'live'].includes(api) && path === '/*') {
+  if (body && config.apiUpgrade !== false && isApiUpgradeAvailable() && ['preview', 'live'].includes(api) && path === '/*') {
     body.forceAsync = true;
   }
   return fetch(url, {
