@@ -64,7 +64,7 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            excludedInitiatorDomains: [process.env.DA_DOMAIN, 'aem.adobe.com'],
+            excludedInitiatorDomains: [process.env.DA_DOMAIN, 'author.aem.live'],
             regexFilter: `^https://${adminHost}/(config/${owner}\\.json|[a-z]+/${owner}/.*)`,
             requestDomains: [adminHost],
             requestMethods: ['get', 'put', 'post', 'delete'],
@@ -84,7 +84,7 @@ export async function configureAuthAndCorsHeaders() {
             }],
           },
           condition: {
-            excludedInitiatorDomains: [process.env.DA_DOMAIN, 'aem.adobe.com'],
+            excludedInitiatorDomains: [process.env.DA_DOMAIN, 'author.aem.live'],
             regexFilter: `^https://${newAdminHost}/(${owner}/.*|profile\\?org\\=${owner}\\&)`,
             requestDomains: [newAdminHost],
             requestMethods: ['get', 'put', 'post', 'delete'],
